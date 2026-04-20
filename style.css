@@ -101,41 +101,118 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','PingFang SC','Micr
 .leaflet-tooltip{background:rgba(10,14,26,.92)!important;border:1px solid rgba(255,255,255,.15)!important;color:#e0e6f0!important;border-radius:8px!important;padding:8px 12px!important;font-size:12px!important;box-shadow:0 4px 16px rgba(0,0,0,.4)!important}
 .leaflet-tooltip::before{border-top-color:rgba(10,14,26,.92)!important}
 
-/* ===== Mobile Responsive ===== */
+
+/* ===== Mobile Responsive (Redesigned v2) ===== */
 @media (max-width: 768px) {
-  #header{height:44px;padding:0 12px}
-  #header h1{font-size:14px}
+  /* 顶部 Header */
+  #header{height:48px;padding:0 12px}
+  #header h1{font-size:15px;letter-spacing:0.5px}
   #header h1 small{display:none}
   #header .stats{font-size:11px;gap:10px}
   #header .stats span:nth-child(n+3){display:none}
-  #sidebar{top:auto;bottom:0;left:0;right:0;width:100%;height:45vh;border-right:none;border-top:1px solid rgba(255,255,255,.12);border-radius:16px 16px 0 0;transition:transform .3s}
-  #sidebar.collapsed{transform:translateY(100%)}
-  #sidebar-toggle{top:auto;bottom:45vh;left:50%;right:auto;transform:translateX(-50%);width:56px;height:24px;border-radius:12px 12px 0 0;border:1px solid rgba(255,255,255,.08);border-bottom:none;font-size:10px;transition:bottom .3s}
-  #sidebar.collapsed~#sidebar-toggle{bottom:0;left:50%}
-  .search-box{padding:10px 12px}
-  .search-box input{padding:8px 12px 8px 32px;font-size:13px}
-  .filter-bar{padding:8px 12px;gap:4px}
-  .filter-btn{padding:4px 10px;font-size:11px}
-  .stats-panel{padding:8px 12px}
+
+  /* 地图全屏，zoom 控件下移避让 header 并增大触控 */
+  #map{height:100vh}
+  .leaflet-control-zoom{margin-top:60px!important;margin-right:10px!important}
+  .leaflet-control-zoom a{width:40px!important;height:40px!important;line-height:38px!important;font-size:20px!important}
+
+  /* 底部抽屉式 sidebar */
+  #sidebar{
+    top:auto;bottom:0;left:0;right:0;width:100%;height:70vh;
+    border-right:none;border-top:1px solid rgba(255,255,255,.12);
+    border-radius:20px 20px 0 0;
+    transform:translateY(calc(100% - 170px));
+    transition:transform .35s cubic-bezier(.4,0,.2,1);
+    box-shadow:0 -8px 32px rgba(0,0,0,.5);
+    z-index:1000;
+  }
+  #sidebar.mobile-expanded{transform:translateY(0)}
+  #sidebar.collapsed{transform:translateY(calc(100% - 170px))}
+
+  /* 顶部拖拽手柄 */
+  #sidebar::before{
+    content:'';position:absolute;top:8px;left:50%;transform:translateX(-50%);
+    width:40px;height:4px;border-radius:2px;background:rgba(255,255,255,.3);
+    pointer-events:none;z-index:2;
+  }
+
+  /* 桌面版左侧 toggle 按钮隐藏 */
+  #sidebar-toggle{display:none}
+
+  /* 搜索框 */
+  .search-box{padding:20px 16px 10px}
+  .search-box input{padding:10px 14px 10px 36px;font-size:14px;border-radius:10px}
+  .search-box::before{left:28px;top:calc(50% + 5px)}
+
+  /* 类型筛选 - 横向滑动 */
+  .filter-bar{padding:10px 12px;flex-wrap:nowrap;overflow-x:auto;-webkit-overflow-scrolling:touch;gap:6px;scrollbar-width:none}
+  .filter-bar::-webkit-scrollbar{display:none}
+  .filter-btn{padding:6px 14px;font-size:12px;flex-shrink:0;white-space:nowrap}
+
+  /* 大洲筛选 */
+  .continent-bar{padding:8px 12px;flex-wrap:nowrap;overflow-x:auto;gap:4px;scrollbar-width:none}
+  .continent-bar::-webkit-scrollbar{display:none}
+  .continent-btn{padding:5px 12px;font-size:11px;flex-shrink:0;white-space:nowrap}
+
+  /* 列表 - 大点击区 */
+  .list-count{padding:8px 14px;font-size:12px}
   #dc-list{padding:4px 0}
-  .dc-item{padding:10px 12px}
-  #detail-panel{width:100%;right:-100%}
-  #detail-panel.open{right:0}
-  #legend{bottom:auto;top:48px;right:8px;padding:8px 10px;min-width:auto;font-size:11px;max-width:140px}
-  #legend h4{font-size:10px;margin-bottom:6px}
-  .legend-item{font-size:11px;margin-bottom:4px;gap:4px}
-  .legend-dot{width:8px;height:8px}
-  .legend-item:nth-child(n+8){display:none}
-  #map-type-switch{bottom:calc(45vh + 8px);transition:bottom .3s}
-  #sidebar.collapsed~#map-type-switch{bottom:32px}
-  #map-type-switch button{padding:4px 12px;font-size:12px}
+  .dc-item{padding:14px;min-height:64px}
+  .dc-item .dc-name{font-size:14px;line-height:1.3}
+  .dc-item .dc-operator{font-size:12px;margin-top:3px}
+  .dc-item .dc-tag{font-size:11px;padding:2px 8px}
+
+  /* 统计面板 */
+  .stats-panel{padding:10px 14px}
+  .stats-panel-title{font-size:10px;margin-bottom:6px}
+  .type-stats{gap:5px}
+
+  /* 详情面板 - 全屏底部滑出 */
+  #detail-panel{
+    top:auto;bottom:0;right:0;left:0;width:100%;height:85vh;
+    transform:translateY(100%);right:0;
+    border-left:none;border-top:1px solid rgba(255,255,255,.12);
+    border-radius:20px 20px 0 0;
+    padding:24px 16px 16px;
+    transition:transform .35s cubic-bezier(.4,0,.2,1);
+    z-index:1005;
+  }
+  #detail-panel.open{transform:translateY(0);right:0}
+  #detail-panel::before{
+    content:'';position:absolute;top:8px;left:50%;transform:translateX(-50%);
+    width:40px;height:4px;border-radius:2px;background:rgba(255,255,255,.3);
+  }
+  .detail-close{top:16px;right:16px;width:36px;height:36px;font-size:20px}
+  .detail-header{margin-top:8px;margin-bottom:18px}
+  .detail-header h2{font-size:18px;padding-right:44px}
+  .detail-grid{grid-template-columns:1fr 1fr;gap:10px}
+  .detail-field{padding:10px}
+  .detail-field .value{font-size:13px}
+
+  /* 地图类型切换 */
+  #map-type-switch{bottom:16px;left:50%;transform:translateX(-50%);padding:3px;z-index:998}
+  #map-type-switch button{padding:6px 14px;font-size:12px}
+
+  /* Sidebar 展开时，底部控件上移 */
+  #sidebar.mobile-expanded~#map-type-switch{bottom:calc(70vh + 12px)}
+
+  /* 图例小屏隐藏 */
+  #legend{display:none}
+
+  /* 遮罩 */
+  .mobile-mask{
+    position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:999;
+    opacity:0;pointer-events:none;transition:opacity .3s;
+  }
+  .mobile-mask.active{opacity:1;pointer-events:auto}
 }
 
 @media (max-width: 480px) {
-  #header .stats{gap:6px}
-  #sidebar{height:50vh}
-  #sidebar-toggle{bottom:50vh}
-  #map-type-switch{bottom:calc(50vh + 8px)}
-  #sidebar.collapsed~#map-type-switch{bottom:32px}
-  #legend{display:none}
+  #header{height:44px}
+  #header h1{font-size:13px}
+  #header .stats{gap:6px;font-size:10px}
+  #sidebar{height:75vh}
+  #sidebar.mobile-expanded~#map-type-switch{bottom:calc(75vh + 12px)}
+  .detail-grid{grid-template-columns:1fr}
+  #detail-panel{padding:24px 14px 14px;height:90vh}
 }

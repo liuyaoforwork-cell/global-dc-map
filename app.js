@@ -327,3 +327,114 @@ document.addEventListener('keydown', function(e) {
 
 // Init
 initMap();
+
+// ============================================================
+// Mobile UX Enhancements
+// ============================================================
+(function() {
+  var isMobile = window.matchMedia('(max-width: 768px)').matches;
+  if (!isMobile) return;
+
+  var sidebar = document.getElementById('sidebar');
+  var detailPanel = document.getElementById('detail-panel');
+
+  // 1. 默认收起侧边栏
+  sidebar.classList.add('collapsed');
+
+  // 2. 创建遮罩层
+  var mask = document.createElement('div');
+  mask.className = 'mobile-mask';
+  document.body.appendChild(mask);
+
+  function expandSidebar() {
+    sidebar.classList.add('mobile-expanded');
+    sidebar.classList.remove('collapsed');
+    mask.classList.add('active');
+  }
+  function collapseSidebar() {
+    sidebar.classList.remove('mobile-expanded');
+    sidebar.classList.add('collapsed');
+    mask.classList.remove('active');
+  }
+
+  mask.addEventListener('click', collapseSidebar);
+
+  // 3. 点击 sidebar 顶部手柄区域 / 搜索框触发展开
+  sidebar.addEventListener('click', function(e) {
+    // 如果已展开，点击手柄区（顶部20px）收起
+    var rect = sidebar.getBoundingClientRect();
+    var clickY = e.clientY - rect.top;
+    if (sidebar.classList.contains('mobile-expanded') && clickY < 20) {
+      collapseSidebar();
+      e.stopPropagation();
+      return;
+    }
+    // 未展开时，点击任何地方都展开
+    if (!sidebar.classList.contains('mobile-expanded')) {
+      expandSidebar();
+    }
+  });
+
+  // 4. 触摸拖拽支持
+  var startY = 0, currentY = 0, dragging = false;
+  sidebar.addEventListener('touchstart', function(e) {
+    startY = e.touches[0].clientY;
+    currentY = startY;
+    dragging = true;
+  }, { passive: true });
+
+  sidebar.addEventListener('touchmove', function(e) {
+    if (!dragging) return;
+    currentY = e.touches[0].clientY;
+  }, { passive: true });
+
+  sidebar.addEventListener('touchend', function() {
+    if (!dragging) return;
+    var delta = currentY - startY;
+    // 向下拖 > 50px 收起；向上拖 > 50px 展开
+    if (delta > 50 && sidebar.classList.contains('mobile-expanded')) {
+      collapseSidebar();
+    } else if (delta < -50 && !sidebar.classList.contains('mobile-expanded')) {
+      expandSidebar();
+    }
+    dragging = false;
+  });
+
+  // 5. 点击列表项后自动收起侧边栏（让用户看地图）
+  var dcList = document.getElementById('dc-list');
+  dcList.addEventListener('click', function(e) {
+    var item = e.target.closest('.dc-item');
+    if (item) {
+      setTimeout(collapseSidebar, 150);
+    }
+  });
+
+  // 6. 详情面板支持向下滑动关闭
+  var dStartY = 0, dCurrentY = 0, dDragging = false;
+  detailPanel.addEventListener('touchstart', function(e) {
+    // 只在顶部 60px 区域响应拖动（避免影响内容滚动）
+    var rect = detailPanel.getBoundingClientRect();
+    var touchY = e.touches[0].clientY - rect.top;
+    if (touchY < 60) {
+      dStartY = e.touches[0].clientY;
+      dCurrentY = dStartY;
+      dDragging = true;
+    }
+  }, { passive: true });
+
+  detailPanel.addEventListener('touchmove', function(e) {
+    if (!dDragging) return;
+    dCurrentY = e.touches[0].clientY;
+  }, { passive: true });
+
+  detailPanel.addEventListener('touchend', function() {
+    if (!dDragging) return;
+    var delta = dCurrentY - dStartY;
+    if (delta > 80) closeDetail();
+    dDragging = false;
+  });
+
+  // 7. 展开侧边栏时，统计面板默认展开
+  var statsPanel = document.getElementById('stats-panel');
+  if (statsPanel) statsPanel.classList.add('visible');
+})();
