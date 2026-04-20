@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>全球数据中心地图 · v5.0</title>
+<link rel="stylesheet" href="libs/leaflet.css"/>
+<link rel="stylesheet" href="libs/MarkerCluster.css"/>
+<link rel="stylesheet" href="libs/MarkerCluster.Default.css"/>
+<link rel="stylesheet" href="style.css"/>
+</head>
+<body>
+<div id="loading"><div class="loader"></div><p>正在加载全球数据中心数据...</p></div>
+<div id="header">
+  <h1>🌍 全球数据中心<span>地图</span> <small style="font-size:12px;color:#5a6478;font-weight:400;margin-left:8px">v5.0 · 2026.04</small></h1>
+  <div class="stats">
+    <span>数据中心 <b id="stat-total">0</b></span>
+    <span>国家/地区 <b id="stat-countries">0</b></span>
+    <span>城市 <b id="stat-cities">0</b></span>
+    <span>运营商 <b id="stat-operators">0</b></span>
+  </div>
+</div>
+<div id="sidebar">
+  <div class="search-box"><input type="text" id="search-input" placeholder="搜索数据中心、城市、国家、运营商..."/></div>
+  <div class="filter-bar" id="filter-bar">
+    <button class="filter-btn active" data-type="all">全部</button>
+    <button class="filter-btn" data-type="cloud-giant">云厂商</button>
+    <button class="filter-btn" data-type="third-party">第三方IDC</button>
+    <button class="filter-btn" data-type="telecom">运营商</button>
+    <button class="filter-btn" data-type="national-hub">国家枢纽</button>
+    <button class="filter-btn" data-type="ai-computing">智算中心</button>
+    <button class="filter-btn" data-type="gov-enterprise">政企</button>
+  </div>
+  <!-- 大洲筛选 -->
+  <div class="filter-bar continent-bar" id="continent-bar">
+    <button class="continent-btn active" data-continent="all">🌐 全部</button>
+    <button class="continent-btn" data-continent="亚洲">亚洲</button>
+    <button class="continent-btn" data-continent="北美洲">北美洲</button>
+    <button class="continent-btn" data-continent="欧洲">欧洲</button>
+    <button class="continent-btn" data-continent="南美洲">南美洲</button>
+    <button class="continent-btn" data-continent="非洲">非洲</button>
+    <button class="continent-btn" data-continent="大洋洲">大洋洲</button>
+  </div>
+  <div class="list-count" id="list-count">共 0 个数据中心 <a id="export-csv" href="#" class="export-link" title="导出CSV">📥 导出</a></div>
+  <div id="country-filter" class="province-filter-bar" style="display:none">
+    <span class="province-filter-label">🏳️ 国家筛选: <b id="cf-name"></b></span>
+    <button class="province-filter-clear" onclick="clearCountryFilter()">✕ 清除</button>
+  </div>
+  <div id="stats-panel" class="stats-panel">
+    <div class="stats-panel-title">📊 类型分布</div>
+    <div id="type-stats" class="type-stats"></div>
+    <div class="stats-panel-title" style="margin-top:10px">🌍 TOP 10 国家/地区</div>
+    <div id="country-stats" class="province-stats"></div>
+  </div>
+  <div id="dc-list"></div>
+</div>
+<button id="sidebar-toggle" onclick="toggleSidebar()">◀</button>
+<div id="detail-panel">
+  <button class="detail-close" onclick="closeDetail()">✕</button>
+  <div id="detail-content"></div>
+</div>
+<div id="map"></div>
+<div id="map-type-switch">
+  <button class="active" onclick="switchMapType('satellite',this)">卫星</button>
+  <button onclick="switchMapType('standard',this)">标准</button>
+  <button onclick="switchMapType('dark',this)">暗色</button>
+</div>
+<div id="legend">
+  <h4>图例</h4>
+  <div class="legend-item"><div class="legend-dot" style="background:#4facfe"></div>云厂商</div>
+  <div class="legend-item"><div class="legend-dot" style="background:#ff6b6b"></div>第三方IDC</div>
+  <div class="legend-item"><div class="legend-dot" style="background:#ffd93d"></div>运营商</div>
+  <div class="legend-item"><div class="legend-dot" style="background:#00e676"></div>国家枢纽</div>
+  <div class="legend-item"><div class="legend-dot" style="background:#ff9100"></div>智算中心</div>
+  <div class="legend-item"><div class="legend-dot" style="background:#b388ff"></div>政企</div>
+  <div class="legend-item" style="margin-top:8px;font-size:11px;color:#5a6478">⚪ 大圆 = 超大规模 / 小圆 = 中型</div>
+  <div class="legend-item" style="font-size:11px;color:#5a6478">📡 脉冲效果 = 国家枢纽 & 智算中心</div>
+</div>
+<script src="libs/leaflet.js"></script>
+<script src="libs/leaflet.markercluster.js"></script>
+<script src="data.js"></script>
+<script src="app.js"></script>
+</body>
+</html>
